@@ -115,3 +115,10 @@
   height: 1em;
   margin-left: 0.5rem;
 }
+
+.hoge {
+  width: 30px;
+  height: 30px;
+  position: 30px;
+  background: url('~/assets/images/icon.png') no-repeat;
+}

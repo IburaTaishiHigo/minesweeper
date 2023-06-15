@@ -4,8 +4,10 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
+        <div className={styles.hoge} />
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
+          <h1>肥後大志</h1>
         </h1>
 
         <p className={styles.description}>
