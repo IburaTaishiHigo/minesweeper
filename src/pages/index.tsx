@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import styles from './index.module.css';
+import type { MouseEvent } from 'react';
+
+
 
 // number × number の二次元配列
 //      ": number" は左にいるやつの型を数値型にするもの
@@ -51,7 +55,7 @@ const [time, setTime] = useState({
 const gameState: 0 | 1 | 2 | 3 = 0;
 const boardWidth: number = userInputs[0].length;
 const boardHeight: number = userInputs.length;
-
+// 要素がすべて-1になる理由はよくわからないので後で確認
 const board: number[][] = createBoard(boardWidth, boardHeight, -1);
 
 // 八方を-1,0,1の数字を使って表現（オセロと一緒）
@@ -89,7 +93,7 @@ const isFirst: boolean = userInputs.every((row) => row.every((cell) => cell !== 
 // pythonだと for a in bとできたが、javaではfor(条件)｛処理｝となっているので条件のところにforを書けない
 // なのでfor (const a of/in b)とすると解決
 //
-//  "bompMap[y + dir[1]]"でbompMapの行を調べる
+//  "bombMap[y + dir[1]]"でbombMapの行を調べる
 //  dir[1]は-1か0か1が入るので"bombMap[y + dir[1]] !== undefined"がそこか上か下に必ず盤面があるを表す
 //  "bombMap[y + dir[1]][x + dir[0]]"が8方向を示していることは自明
 //  "bombMap[y + dir[1]][x + dir[0]] === 1"で8方向に爆弾がないことを表す
@@ -137,7 +141,17 @@ const checkAround = (x: number, y: number) => {
   }
 };
 
-// 爆弾を配置
+  // 爆弾を配置
+// "JSON.stringify(bombMap)"でほかのパソコンにも共有できるような特殊な二次元配列に変換
+// このままではコンピュータが理解できないから"JSON.parse()"でパソコンが理解できる二次元配列に変換
+// "newBombMap"がほかのパソコンに共有できてかつパソコンが理解できるような二次元配列
+//
+// Math.random() * boardWidth * boardHeightで0~81までの小数を出す
+// Math.floor(Math.random() * boardWidth * boardHeight)で整数を出す 
+//
+// その場所に爆弾がないかつおける場所すべてだった場合（条件）、爆弾を一つ置く
+// これを10回繰り返す
+// "setBombMap(newBombMap);"でステート更新関数を使い、newBombMapを引数として扱うことによってステート関数（bombMap）にそのnewBombMapが渡され値が更新される
 const setBomb = (cannotPutX: number, cannotPutY: number) => {
   let bombs = 0;
   const newBombMap: number[][] = JSON.parse(JSON.stringify(bombMap));
@@ -152,5 +166,42 @@ const setBomb = (cannotPutX: number, cannotPutY: number) => {
   }
   setBombMap(newBombMap);
 };
+
+  // 爆弾をクリック時
+// "bombMap[j][i] && userInputs[j][i] < 2"で「爆弾があるマス目」かつ「そのマス目が2回未満クリックされた」の時
+// board[j][i]がボムセルになるということを示しているらしいが、よくわからないので後で確認
+ const burstBomb = (x: number, y: number) => {
+  gameState = 3;
+  for (let i = 0; i < boardWidth; i++) {
+    for (let j = 0; j < boardHeight; j++) {
+      if (bombMap[j][i] && userInputs[j][i] < 2) {
+        board[j][i] = 11;
+      }
+    }
+  }
+  board[y][x] = 12;
+};
+
+  // 数字クリックした時
+  const clickNumber = (x: number, y: number) => {
+    let flagCount = 0;
+    let bombs = 0;
+    for (const dir of dirList) {
+      if (board[y + dir[1]] !== undefined && board[y + dir[1]][x + dir[0]]) {
+        flagCount += userInputs[y + dir[1]][x + dir[0]] === 3 ? 1 : 0;
+        bombs += bombMap[y + dir[1]][x + dir[0]];
+      }
+    }
+    if (flagCount === bombs) {
+      const newUserInputs: (0 | 1 | 2 | 3)[][] = JSON.parse(JSON.stringify(userInputs));
+      for (const dir of dirList) {
+        if (board[y + dir[1]] !== undefined && board[y + dir[1]][x + dir[0]] < 9) {
+          newUserInputs[y + dir[1]][x + dir[0]] = 1;
+        }
+      }
+      setUserInputs(newUserInputs);
+    }
+  };
+
 
 export default Home;
