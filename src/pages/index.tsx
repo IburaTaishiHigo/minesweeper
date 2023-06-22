@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
+import styles from '../styles/Home.module.css';
 
 // number × number の二次元配列
 //      ": number" は左にいるやつの型を数値型にするもの
@@ -93,8 +94,8 @@ const Home = () => {
   const isFirst: boolean = userInputs.every((row) => row.every((cell) => cell !== 1));
 
   //    空白連鎖
-  // 0は爆弾あり
-  // 1は爆弾なし
+  // bombs = 0 : 爆弾あり
+  // bombs = 1 : 爆弾なし
   //
   // pythonだと for a in bとできたが、javaではfor(条件)｛処理｝となっているので条件のところにforを書けない
   // なのでfor (const a of/in b)とすると解決
@@ -271,7 +272,7 @@ const Home = () => {
   };
 
   // 置ける旗の数
-  // "count = 10"で旗が置ける最大値を10に設定
+  // "count = 10"で旗が置ける使用制限があるらしく、それの最大値を10に設定
   // "userInputs[y][x] === 3"でそのセルに旗が立っているかを調べ、立っている場合はcountを1減らす
   const countCanPutFlag = (digit: 1 | 2 | 3) => {
     let count = 10;
@@ -364,6 +365,180 @@ const Home = () => {
       }
     }
   };
+
+    //右クリックの処理
+  // "event.preventDefault();"ですべてのデフォルトの動作をキャンセルして新しい動きを作る
+  // "board[y][x] = -1"の場合、
+  // newUserInputs[y][x]がもつそれぞれの値の意味は以下のようになっている
+  // 0: まだ開けていないマス目
+  // 1: 左クリックで開けたマス目
+  // 2: 右クリックではてなを立てたマス目
+  // 3: 右クリックでフラグをつけたマス目
+  //
+  // "case -1:
+  // newUserInputs[y][x] = 3;
+  // board[y][x] = 10;
+  // break;"
+  // でそのマス目に石がある場合、
+  // 公開される形の盤面のそのマス目にフラグを立てて、board上の盤面にもフラグを立てる
+  // "case 9:
+  // newUserInputs[y][x] = 0;
+  // board[y][x] = 0;
+  // break;"
+  // でそのマス目に石とはてな場合、
+  // 公開される形の盤面のそのマス目は何もない状態にリセットして、board上の盤面も何もない状態にリセット
+  // "case 10:
+  // newUserInputs[y][x] = 2;
+  // board[y][x];
+  // break;"
+  // でそのマス目に石と旗がある場合、
+  // 公開される形の盤面のそのマス目に旗をつけて、board上の盤面にはなにもしない
+  //
+  // そして条件分岐がおわったら、
+  // "setUserInputs(newUserInputs);"でuserInputsにnewUserInputsを情報を入れる
+    const clickRight = (x: number, y: number, event: MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const newUserInputs: (0 | 1 | 2 | 3)[][] = JSON.parse(JSON.stringify(userInputs));
+      switch (board[y][x]) {
+        case -1:
+          newUserInputs[y][x] = 3;
+          board[y][x] = 10;
+          break;
+        case 9:
+          newUserInputs[y][x] = 0;
+          board[y][x] = 0;
+          break;
+        case 10:
+          newUserInputs[y][x] = 2;
+          board[y][x];
+          break;
+      }
+      setUserInputs(newUserInputs);
+    };
+
+    // "return()"で画面に表示するものを返す
+// ${}は式を埋め込むためのもの。つまり、{}の中に式を書くと、その式の結果が埋め込まれる    
+// ${styles[`num-${countCanPutFlag(3)}`]}`}にあるように、
+// []は動的なプロパティ名を使うためのもの。つまり、[]の中に式を書くと、その式の結果がプロパティ名として使われる
+// ${}はその中の式から得られた値を文字列にする
+// そして``で囲われているので、numとか-とかの文字列と連結できる（つまり、num-1とかnum-2とかになる）
+// javascriptではプロパティを指定して、値を取得する方法が二つある
+// 一つは、オブジェクト.プロパティ名
+// もう一つは、オブジェクト[プロパティ名]
+// なぜ二つが使われるかというと、前者は既知のプロパティ名、後者は変化するもしくは本来ダメなプロパティ名という使い分けがあるから
+// また、num-${countCanPutFlag(3)}を囲んでいるのが""ではないのは、
+// ${}を使った式を扱うときはその式全体をテンプレートリテラルの文字列として全体を``で囲わなければいけない
+// onClickはイベントハンドラ(イベントが発生したときに実行させる処理)の一種
+// {}を使用することによってJavaScriptの式や変数を書き込むことができる
+    return (
+      <div className={styles.container}>
+        <div className={styles.minesweeper}>
+          <header className={styles.header}>
+            <div className={styles.counter}>
+              <div className={`${styles.num} ${styles[`num-${countCanPutFlag(3)}`]}`}>
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+              <div className={`${styles.num} ${styles[`num-${countCanPutFlag(2)}`]}`}>
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+              <div className={`${styles.num} ${styles[`num-${countCanPutFlag(1)}`]}`}>
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+            </div>
+            <button
+              className={styles['reset-button']}
+              onClick={resetGame}
+              style={{ backgroundPosition: !gameState ? '-1100%' : `${(gameState + 10) * -100}%` }}
+            />
+            <div className={styles.counter}>
+              <div
+                className={`${styles.num} ${
+                  styles[`num-${Math.floor((time.currentTime - time.startTime) / 100000)}`]
+                }`}
+              >
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+              <div
+                className={`${styles.num} ${
+                  styles[`num-${Math.floor(((time.currentTime - time.startTime) % 100000) / 10000)}`]
+                }`}
+              >
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+              <div
+                className={`${styles.num} ${
+                  styles[`num-${Math.floor(((time.currentTime - time.startTime) % 10000) / 1000)}`]
+                }`}
+              >
+                <div className={styles['num-top']} />
+                <div className={styles['num-bottom']} />
+              </div>
+            </div>
+          </header>
+          <div
+            className={styles.board}
+            style={{ gridTemplate: `repeat(${boardHeight}, 1fr) / repeat(${boardWidth}, 1fr)` }}
+          >
+            {board.map((row, y) =>
+              row.map((cell, x) => (
+                <div
+                  className={`${styles.cell} ${bombMap[y][x] ? styles['has-bomb'] : ''}`}
+                  style={{ backgroundColor: board[y][x] === 12 ? '#f00' : '#0000' }}
+                  key={`${x}_${y}`}
+                  onContextMenu={(event) => clickRight(x, y, event)}
+                  onMouseUp={(event) => clickLeft(x, y, event)}
+                >
+                  {(board[y][x] === -1 || (board[y][x] > 8 && board[y][x] < 11)) && (
+                    <div className={styles.stone}>
+                      {(board[y][x] === 9 || board[y][x] === 10) && (
+                        <div
+                          className={styles.icon}
+                          style={{ backgroundPosition: `${(board[y][x] - 1) * -100}%` }}
+                        />
+                      )}
+                    </div>
+                  )}
+                  {board[y][x] !== 0 && (
+                    <div
+                      className={styles.icon}
+                      style={{
+                        backgroundPosition:
+                          board[y][x] === 12 ? '-1000%' : `${(board[y][x] - 1) * -100}%`,
+                      }}
+                    />
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          <footer className={styles.footer}>
+            <input
+              type="number"
+              name="width"
+              value={boardWidth}
+              min="1"
+              max="50"
+              onInput={(e) => changeWidth(parseInt(e.currentTarget.value))}
+            />
+            <input
+              type="number"
+              name="height"
+              value={boardHeight}
+              min="1"
+              max="50"
+              onInput={(e) => changeHeight(parseInt(e.currentTarget.value))}
+            />
+          </footer>
+        </div>
+      </div>
+  );
 };
+
+
 
 export default Home;
