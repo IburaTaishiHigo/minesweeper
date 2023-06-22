@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
-import styles from '../styles/Home.module.css';
+import styles from './index.module.scss';
 
 // number × number の二次元配列
 //      ": number" は左にいるやつの型を数値型にするもの
@@ -123,10 +123,10 @@ const Home = () => {
   // board[y + dir[1]][x + dir[0]] === 9 ||
   // board[y + dir[1]][x + dir[0]] === 10)で上下の盤面がないかつ8方向のどこかが石 または 石+はてな または 石+旗がある
   const checkAround = (x: number, y: number) => {
-    const bombs = 0;
+    let bombs = 0;
     for (const dir of dirList) {
       if (bombMap[y + dir[1]] !== undefined && bombMap[y + dir[1]][x + dir[0]] === 1) {
-        bombs;
+        bombs++;
       }
     }
 
@@ -265,6 +265,15 @@ const Home = () => {
   const changeWidth = (width: number) => {
     if (width !== undefined && width > 0 && width < 100) {
       const height: number = userInputs.length;
+      resetGame();
+      setUserInputs(createBoard(width, height, 0));
+      setBombMap(createBoard(width, height, 0));
+    }
+  };
+  // 縦に並ぶマスの数を変える
+  const changeHeight = (height: number) => {
+    if (height !== undefined && height > 0 && height < 100) {
+      const width: number = userInputs[0].length;
       resetGame();
       setUserInputs(createBoard(width, height, 0));
       setBombMap(createBoard(width, height, 0));

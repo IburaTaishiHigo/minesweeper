@@ -1,0 +1,353 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0 0.5rem;
+}
+
+.minesweeper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #c6c6c6;
+  padding: 12px;
+  border: solid 4px {
+    top-color: #fff;
+    left-color: #fff;
+    right-color: #868686;
+    bottom-color: #868686;
+  }
+}
+
+.board {
+  display: grid;
+  grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+  width: 64vmin;
+  max-width: 640px;
+  aspect-ratio: 1;
+  background-color: #c6c6c6;
+  border: solid 6px {
+    top-color: #868686;
+    left-color: #868686;
+    right-color: #fff;
+    bottom-color: #fff;
+  }
+
+  &:active {
+    .stone:not(:has(> .icon)):hover {
+      border: 0;
+    }
+  }
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border: solid 1px #808080;
+}
+
+.stone {
+  width: 100%;
+  height: 100%;
+  background-color: #c6c6c6;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  user-select: none;
+  border: solid 4px {
+    top-color: #fff;
+    left-color: #fff;
+    right-color: #868686;
+    bottom-color: #868686;
+  }
+}
+
+.icon {
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/images/icon.png');
+  background-size: 1400%;
+  background-repeat: repeat-x;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  user-select: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 64vmin;
+  max-width: 640px;
+  background-color: #c0c0c0;
+  padding: min(12px, 0.8vmin);
+  border: solid 6px {
+    top-color: #868686;
+    left-color: #868686;
+    right-color: #fff;
+    bottom-color: #fff;
+  }
+}
+
+.reset-button {
+  display: block;
+  width: min(16%, 8vmin);
+  background-size: 1400%;
+  background-position-x: 300%;
+  aspect-ratio: 1;
+  padding: 0;
+  margin: 0;
+  background-color: #c6c6c6;
+  background-image: url('../../assets/images/icon.png');
+  outline: solid 1px #808080;
+  border: solid 4px {
+    top-color: #fff;
+    left-color: #fff;
+    right-color: #868686;
+    bottom-color: #868686;
+  }
+  &:active {
+    border-color: #868686;
+  }
+}
+
+.counter {
+  background-color: #000;
+  color: #fb0007;
+  font-weight: bold;
+  width: min(24%, 12vmin);
+  aspect-ratio: 3/2;
+  padding: 4px;
+  display: flex;
+  justify-content: space-between;
+  gap: min(8px, 0.6vmin);
+  border: solid 2px {
+    top-color: #868686;
+    left-color: #868686;
+    right-color: #fff;
+    bottom-color: #fff;
+  }
+}
+
+.num {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: min(4px, 0.4vmin);
+  overflow: hidden;
+}
+
+.num-top {
+  flex-grow: 1;
+  border: min(10px, 1vmin) solid {
+    top-color: #f00;
+    right-color: #e00;
+    left-color: #f33;
+    bottom-width: min(5px, 0.5vmin);
+    bottom-color: #d00;
+  }
+}
+
+.num-bottom {
+  flex-grow: 1;
+  border: min(10px, 1vmin) solid {
+    top-width: min(5px, 0.5vmin);
+    top-color: #d00;
+    right-color: #e00;
+    left-color: #f33;
+    bottom-color: #c00;
+  }
+}
+
+.num-1 {
+  > .num-top,
+  > .num-bottom {
+    border: {
+      top-color: #0000;
+      left-color: #0000;
+      bottom-color: #0000;
+    }
+  }
+}
+
+.num-2 {
+  > .num-top {
+    border-left-color: #0000;
+  }
+  > .num-bottom {
+    border-right-color: #0000;
+  }
+}
+
+.num-3 {
+  > .num-top,
+  > .num-bottom {
+    border-left-color: #0000;
+  }
+}
+
+.num-4 {
+  > .num-top {
+    border-top-color: #0000;
+  }
+  > .num-bottom {
+    border: {
+      left-color: #0000;
+      bottom-color: #0000;
+    }
+  }
+}
+
+.num-5 {
+  > .num-top {
+    border-right-color: #0000;
+  }
+  > .num-bottom {
+    border-left-color: #0000;
+  }
+}
+
+.num-6 > .num-top {
+  border-right-color: #0000;
+}
+
+.num-7 {
+  > .num-top {
+    border-bottom-color: #0000;
+  }
+  > .num-bottom {
+    border: {
+      top-color: #0000;
+      left-color: #0000;
+      bottom-color: #0000;
+    }
+  }
+}
+
+.num-9 > .num-bottom {
+  border-left-color: #0000;
+}
+
+.num-0 {
+  > .num-top {
+    border-bottom-color: #0000;
+  }
+  > .num-bottom {
+    border-top-color: #0000;
+  }
+}
+
+.num-minus {
+  > .num-top,
+  > .num-bottom {
+    border: {
+      right-color: #0000;
+      left-color: #0000;
+    }
+  }
+  > .num-top {
+    border-top-color: #0000;
+  }
+  > .num-bottom {
+    border-bottom-color: #0000;
+  }
+}
+
+@for $i from 0 through 81 {
+  $list: -10, -9, -8, -1, 1, 8, 9, 10;
+  @if $i == 1 {
+    @each $n in $list {
+      @if $n > 0 and $n != 8 {
+        .board:has(.cell:nth-child(1):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{1 + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i <= 8 {
+    @each $n in $list {
+      @if $n >= -1 {
+        .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{$i + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i == 9 {
+    @each $n in $list {
+      @if $n >= -1 and $n != 1 and $n != 10 {
+        .board:has(.cell:nth-child(9):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{9 + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i == 81 {
+    @each $n in $list {
+      @if $n > 0 and $n != 8 {
+        .board:has(.cell:nth-child(#{$i}) > .icon:hover):active
+          > .cell:nth-child(#{81 - $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i > 73 {
+    @each $n in $list {
+      @if $n <= 1 {
+        .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{$i + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i == 73 {
+    @each $n in $list {
+      @if $n <= 1 and $n != -1 and $n != -10 {
+        .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{$i + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i % 9 == 1 {
+    @each $n in $list {
+      @if $n != -10 and $n != -1 and $n != 8 {
+        .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{$i + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else if $i % 9 == 0 {
+    @each $n in $list {
+      @if $n != 10 and $n != 1 and $n != -8 {
+        .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+          > .cell:nth-child(#{$i + $n})
+          > .stone:not(:has(> .icon)) {
+          border: 0;
+        }
+      }
+    }
+  } @else {
+    @each $n in $list {
+      .board:has(.cell:nth-child(#{$i}):not(.has-bomb) > .icon:hover):active
+        > .cell:nth-child(#{$i + $n})
+        > .stone:not(:has(> .icon)) {
+        border: 0;
+      }
+    }
+  }
+}
